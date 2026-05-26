@@ -169,6 +169,16 @@
   .recall-badge.danger{background:var(--red);color:#fff;}
   .recall-badge.safe{background:var(--green);color:#fff;}
   .more-recalls{font-size:.58rem;color:var(--gray);margin-top:.6rem;text-align:center;}
+
+  /* modal year selector */
+  .modal-year-wrap{display:flex;align-items:center;gap:.7rem;margin-top:.7rem;flex-wrap:wrap;}
+  .modal-year-label{font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gray);}
+  .modal-year-sel{background:var(--black);border:1px solid var(--gray-dark);color:var(--white);
+    padding:.35rem 1.8rem .35rem .65rem;font-family:'DM Mono',monospace;font-size:.72rem;
+    cursor:pointer;appearance:none;background-image:none;border-radius:0;}
+  .modal-year-sel:focus{outline:none;border-color:var(--gold);}
+  .modal-year-hint{font-family:'Cormorant Garamond',serif;font-style:italic;
+    color:var(--gray);font-size:.9rem;}
 </style>
 </head>
 <body>
@@ -177,15 +187,18 @@
 <div class="modal-overlay hidden" id="modal">
   <div class="modal-box">
     <div class="modal-head">
-      <div>
+      <div style="flex:1;min-width:0;">
         <div class="c-make" id="m-make"></div>
-        <div class="c-name" id="m-name" style="font-size:1.35rem;margin-bottom:.15rem;"></div>
-        <div class="c-sub" id="m-sub" style="margin-bottom:0;"></div>
+        <div class="c-name" id="m-name" style="font-size:1.35rem;margin-bottom:.3rem;"></div>
+        <div class="modal-year-wrap">
+          <span class="modal-year-label">Año</span>
+          <select class="modal-year-sel" id="m-year-sel" onchange="onModalYearChange()"></select>
+        </div>
       </div>
       <button class="modal-close" id="modalCloseBtn">✕</button>
     </div>
     <div class="modal-body" id="modal-body">
-      <div class="loading"><div class="spinner"></div><div class="et">Cargando datos...</div></div>
+      <p class="modal-year-hint">Elegí un año para ver crash tests y recalls.</p>
     </div>
   </div>
 </div>
@@ -541,20 +554,51 @@ function cardHTML(make, model, year, vehicleType) {
     <div class="card-actions">
       <a href="https://www.google.com/search?q=${googleQ}" target="_blank"
         rel="noopener noreferrer" class="btn-google">Google →</a>
-      ${year ? `<button class="btn-detail"
-        data-make="${esc(make)}" data-model="${esc(model)}" data-year="${esc(year)}">Detalles</button>` : ''}
+      <button class="btn-detail"
+        data-make="${esc(make)}" data-model="${esc(model)}" data-year="${esc(year||'')}">Detalles</button>
     </div>
   </div>`;
 }
 
 // ── MODAL ─────────────────────────────────────────────────────────────────
-async function openModal(make, model, year) {
+function openModal(make, model, preselectedYear) {
   $('m-make').textContent = make;
   $('m-name').textContent = model;
-  $('m-sub').textContent  = year;
-  $('modal-body').innerHTML = `<div class="loading"><div class="spinner"></div><div class="et">Cargando datos de seguridad...</div></div>`;
+
+  // poblar selector de años
+  const curY = new Date().getFullYear();
+  let opts = '<option value="">— Elegí un año —</option>';
+  for (let y = curY; y >= 2000; y--) opts += `<option value="${y}">${y}</option>`;
+  $('m-year-sel').innerHTML = opts;
+
+  // preseleccionar si venía del filtro lateral
+  if (preselectedYear) $('m-year-sel').value = preselectedYear;
+
+  // guardar make/model en el select para onModalYearChange
+  $('m-year-sel').dataset.make  = make;
+  $('m-year-sel').dataset.model = model;
+
   $('modal').classList.remove('hidden');
   document.body.style.overflow = 'hidden';
+
+  if (preselectedYear) loadModalData(make, model, preselectedYear);
+  else $('modal-body').innerHTML = `<p class="modal-year-hint">Elegí un año para ver crash tests y recalls.</p>`;
+}
+
+async function onModalYearChange() {
+  const sel   = $('m-year-sel');
+  const year  = sel.value;
+  const make  = sel.dataset.make;
+  const model = sel.dataset.model;
+  if (!year) {
+    $('modal-body').innerHTML = `<p class="modal-year-hint">Elegí un año para ver crash tests y recalls.</p>`;
+    return;
+  }
+  loadModalData(make, model, year);
+}
+
+async function loadModalData(make, model, year) {
+  $('modal-body').innerHTML = `<div class="loading"><div class="spinner"></div><div class="et">Cargando datos de ${year}...</div></div>`;
 
   const [ratingsHTML, recallsHTML] = await Promise.all([
     fetchRatings(make, model, year),
@@ -563,11 +607,11 @@ async function openModal(make, model, year) {
 
   $('modal-body').innerHTML = `
     <div>
-      <div class="modal-section-title">Crash Tests NHTSA</div>
+      <div class="modal-section-title">Crash Tests NHTSA · ${year}</div>
       ${ratingsHTML}
     </div>
     <div>
-      <div class="modal-section-title">Recalls de Seguridad</div>
+      <div class="modal-section-title">Recalls de Seguridad · ${year}</div>
       ${recallsHTML}
     </div>`;
 }
