@@ -13,6 +13,7 @@
   *{margin:0;padding:0;box-sizing:border-box;}
   body{background:var(--black);color:var(--white);font-family:'DM Mono',monospace;min-height:100vh;}
 
+  /* ── HEADER ── */
   header{padding:2.5rem 4rem 2rem;text-align:center;
     background:radial-gradient(ellipse 80% 60% at 50% 30%,rgba(201,168,76,.08) 0%,transparent 70%),var(--black);
     border-bottom:1px solid var(--gray-dark);}
@@ -21,15 +22,16 @@
   h1 em{font-style:italic;color:var(--gold);}
   .subtitle{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1rem;color:var(--gray);max-width:560px;margin:0 auto;}
 
+  /* ── LAYOUT ── */
   .main-grid{display:grid;grid-template-columns:320px 1fr;min-height:calc(100vh - 180px);}
   @media(max-width:860px){.main-grid{grid-template-columns:1fr;}}
 
+  /* ── SIDEBAR ── */
   .sidebar{background:var(--bg);border-right:1px solid var(--gray-dark);
     padding:1.8rem 1.6rem;position:sticky;top:0;height:100vh;overflow-y:auto;}
   @media(max-width:860px){.sidebar{position:static;height:auto;border-right:none;border-bottom:1px solid var(--gray-dark);}}
   .s-title{font-family:'Playfair Display',serif;font-size:1.2rem;font-style:italic;color:var(--gold);margin-bottom:.25rem;}
   .s-sub{font-size:.58rem;letter-spacing:.2em;color:var(--gray);text-transform:uppercase;margin-bottom:1.6rem;}
-
   .fgroup{margin-bottom:1.4rem;padding-bottom:1.4rem;border-bottom:1px solid var(--gray-dark);}
   .fgroup:last-of-type{border-bottom:none;}
   .fgroup.hidden{display:none;}
@@ -38,6 +40,7 @@
   .step{background:var(--gold);color:var(--black);width:17px;height:17px;border-radius:50%;
     display:inline-flex;align-items:center;justify-content:center;font-size:.58rem;font-weight:700;}
 
+  /* ── INPUTS ── */
   .sel-wrap{position:relative;}
   select{width:100%;background:var(--black);border:1px solid var(--gray-dark);color:var(--white);
     padding:.72rem 2rem .72rem .8rem;font-family:'DM Mono',monospace;font-size:.78rem;
@@ -46,16 +49,15 @@
   select:disabled{color:var(--gray);cursor:not-allowed;opacity:.5;}
   .sel-wrap::after{content:'▾';position:absolute;right:.8rem;top:50%;transform:translateY(-50%);
     color:var(--gold);pointer-events:none;}
-
   .hint{font-size:.58rem;color:var(--gray);margin-top:.4rem;min-height:.85rem;}
   .hint.go{color:var(--gold);}.hint.ok{color:var(--green);}.hint.err{color:var(--red);}
-
   .search-input{width:100%;background:var(--black);border:1px solid var(--gray-dark);color:var(--white);
     padding:.72rem .8rem;font-family:'DM Mono',monospace;font-size:.78rem;transition:border-color .2s;}
   .search-input:focus{outline:none;border-color:var(--gold);}
   .search-input::placeholder{color:var(--gray);}
   .search-input:disabled{opacity:.4;cursor:not-allowed;}
 
+  /* ── CHIPS ── */
   .chips{display:flex;flex-wrap:wrap;gap:.35rem;}
   .chip{background:transparent;border:1px solid var(--gray-dark);color:var(--white);
     padding:.38rem .75rem;font-family:'DM Mono',monospace;font-size:.62rem;
@@ -63,40 +65,59 @@
   .chip:hover{border-color:var(--gold);}
   .chip.active{background:var(--gold);border-color:var(--gold);color:var(--black);}
 
+  /* ── RESET ── */
   .reset-btn{width:100%;background:transparent;border:1px solid var(--gray-dark);color:var(--gray);
     padding:.68rem;font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.2em;
     text-transform:uppercase;cursor:pointer;transition:all .2s;margin-top:.8rem;}
   .reset-btn:hover{border-color:var(--red);color:var(--red);}
 
+  /* ── RESULTS ── */
   .results{padding:2.2rem;}
   @media(max-width:600px){.results{padding:1rem;}}
-  .r-header{display:flex;justify-content:space-between;align-items:baseline;
+  .r-header{display:flex;justify-content:space-between;align-items:center;
     margin-bottom:1.8rem;padding-bottom:1rem;border-bottom:1px solid var(--gray-dark);flex-wrap:wrap;gap:.8rem;}
   .rcount{font-family:'Playfair Display',serif;font-size:1.6rem;font-style:italic;}
   .rcount .n{font-weight:900;color:var(--gold);font-style:normal;}
+  .r-controls{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;}
   .sort-wrap{display:flex;align-items:center;gap:.6rem;}
   .sort-wrap label{font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gray);}
   .sort-wrap select{width:auto;padding:.38rem .6rem;font-size:.7rem;}
+  .fav-toggle{background:transparent;border:1px solid var(--gray-dark);color:var(--gray);
+    padding:.42rem .9rem;font-family:'DM Mono',monospace;font-size:.62rem;cursor:pointer;
+    transition:all .2s;border-radius:2px;white-space:nowrap;}
+  .fav-toggle:hover{border-color:var(--gold);color:var(--gold);}
+  .fav-toggle.active{background:rgba(201,168,76,.15);border-color:var(--gold);color:var(--gold);}
+  .fav-count{background:var(--gold);color:var(--black);font-size:.5rem;padding:.1rem .35rem;
+    border-radius:2px;margin-left:.35rem;font-weight:700;}
 
+  /* ── CARDS ── */
   .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.2rem;}
   .card{background:var(--bg);border:1px solid var(--gray-dark);padding:1.4rem;
-    transition:all .3s;display:flex;flex-direction:column;}
+    transition:all .3s;display:flex;flex-direction:column;position:relative;}
   .card:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 6px 24px rgba(201,168,76,.1);}
-  .c-make{font-size:.54rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:.25rem;}
-  .c-name{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;line-height:1.1;
-    margin-bottom:.2rem;text-transform:capitalize;}
+  .c-make{font-size:.54rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);
+    margin-bottom:.25rem;padding-right:2rem;}
+  .c-name{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;
+    line-height:1.1;margin-bottom:.2rem;text-transform:capitalize;}
   .c-sub{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--gray);
     font-size:.88rem;margin-bottom:1rem;}
   .tags{display:flex;flex-wrap:wrap;gap:.25rem;margin-bottom:1rem;}
   .tag{font-size:.48rem;padding:.18rem .45rem;background:rgba(201,168,76,.1);
     color:var(--gold);border-radius:2px;letter-spacing:.1em;text-transform:uppercase;}
-  .card-actions{margin-top:auto;}
-  .btn-google{display:block;width:100%;background:transparent;border:1px solid var(--gray-dark);
-    color:var(--gray);padding:.52rem .6rem;font-family:'DM Mono',monospace;font-size:.58rem;
-    letter-spacing:.1em;text-transform:uppercase;text-decoration:none;text-align:center;
-    transition:all .2s;}
+  .card-actions{margin-top:auto;display:flex;gap:.5rem;}
+  .btn-google,.btn-detail{flex:1;background:transparent;border:1px solid var(--gray-dark);
+    color:var(--gray);padding:.52rem .4rem;font-family:'DM Mono',monospace;font-size:.56rem;
+    letter-spacing:.08em;text-transform:uppercase;text-decoration:none;text-align:center;
+    cursor:pointer;transition:all .2s;display:block;}
   .btn-google:hover{border-color:var(--gold);color:var(--gold);}
+  .btn-detail{border-color:var(--gold);color:var(--gold);}
+  .btn-detail:hover{background:rgba(201,168,76,.1);}
+  .btn-heart{position:absolute;top:.85rem;right:.85rem;background:none;border:none;
+    font-size:1.1rem;cursor:pointer;color:var(--gray);transition:all .2s;line-height:1;padding:.1rem;}
+  .btn-heart:hover{color:var(--gold);}
+  .btn-heart.saved{color:var(--gold);}
 
+  /* ── EMPTY / LOADING ── */
   .empty,.loading{grid-column:1/-1;text-align:center;padding:4rem 2rem;}
   .ei{font-family:'Playfair Display',serif;font-size:3rem;font-style:italic;
     color:var(--gold);opacity:.3;margin-bottom:.8rem;}
@@ -106,9 +127,68 @@
   .spinner{width:34px;height:34px;margin:0 auto 1rem;border:2px solid var(--gray-dark);
     border-top-color:var(--gold);border-radius:50%;animation:sp .8s linear infinite;}
   @keyframes sp{to{transform:rotate(360deg);}}
+
+  /* ── MODAL ── */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);
+    display:flex;align-items:center;justify-content:center;z-index:100;padding:1.5rem;}
+  .modal-overlay.hidden{display:none;}
+  .modal-box{background:var(--bg);border:1px solid var(--gray-dark);
+    width:100%;max-width:620px;max-height:88vh;overflow-y:auto;}
+  .modal-head{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;
+    padding:1.8rem;border-bottom:1px solid var(--gray-dark);position:sticky;top:0;background:var(--bg);}
+  .modal-close{background:none;border:none;color:var(--gray);font-size:1.3rem;
+    cursor:pointer;padding:.2rem;line-height:1;transition:color .2s;flex-shrink:0;}
+  .modal-close:hover{color:var(--red);}
+  .modal-body{padding:1.8rem;display:flex;flex-direction:column;gap:2rem;}
+  .modal-section-title{font-size:.54rem;letter-spacing:.3em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:1rem;padding-bottom:.6rem;border-bottom:1px solid var(--gray-dark);}
+
+  /* ratings */
+  .ratings-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;}
+  .rating-item{background:rgba(255,255,255,.02);border:1px solid var(--gray-dark);padding:1rem;}
+  .rating-label{font-size:.48rem;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--gray);margin-bottom:.5rem;}
+  .rating-stars{font-size:1.1rem;letter-spacing:.05rem;}
+  .star-filled{color:var(--gold);}
+  .star-empty{color:var(--gray-dark);}
+  .rating-na{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--gray);font-size:.88rem;}
+  .rating-source{font-size:.5rem;color:var(--gray);margin-top:.5rem;font-style:italic;}
+
+  /* recalls */
+  .recall-list{display:flex;flex-direction:column;gap:.8rem;}
+  .recall-item{background:rgba(255,255,255,.02);border-left:3px solid var(--red);padding:.9rem 1rem;}
+  .recall-component{font-size:.48rem;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--red);margin-bottom:.3rem;}
+  .recall-summary{font-family:'Cormorant Garamond',serif;font-size:.95rem;
+    color:var(--white);line-height:1.45;}
+  .recall-date{font-size:.5rem;color:var(--gray);margin-top:.35rem;}
+  .no-recalls{display:flex;align-items:center;gap:.6rem;font-family:'Cormorant Garamond',serif;
+    font-style:italic;color:var(--green);font-size:1rem;}
+  .recall-badge{display:inline-block;font-size:.52rem;padding:.15rem .5rem;
+    border-radius:2px;margin-left:.5rem;vertical-align:middle;}
+  .recall-badge.danger{background:var(--red);color:#fff;}
+  .recall-badge.safe{background:var(--green);color:#fff;}
+  .more-recalls{font-size:.58rem;color:var(--gray);margin-top:.6rem;text-align:center;}
 </style>
 </head>
 <body>
+
+<!-- ── MODAL ── -->
+<div class="modal-overlay hidden" id="modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div>
+        <div class="c-make" id="m-make"></div>
+        <div class="c-name" id="m-name" style="font-size:1.35rem;margin-bottom:.15rem;"></div>
+        <div class="c-sub" id="m-sub" style="margin-bottom:0;"></div>
+      </div>
+      <button class="modal-close" id="modalCloseBtn">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body">
+      <div class="loading"><div class="spinner"></div><div class="et">Cargando datos...</div></div>
+    </div>
+  </div>
+</div>
 
 <header>
   <div class="eyebrow">Car Explorer · NHTSA vPIC API</div>
@@ -124,7 +204,7 @@
     <div class="fgroup">
       <label class="flabel"><span>Marca</span><span class="step">1</span></label>
       <div class="sel-wrap">
-        <select id="makeSelect" onchange="onMakeChange()">
+        <select id="makeSelect">
           <option value="">Cargando marcas...</option>
         </select>
       </div>
@@ -134,7 +214,7 @@
     <div class="fgroup">
       <label class="flabel"><span>Modelo</span><span class="step">2</span></label>
       <div class="sel-wrap">
-        <select id="modelSelect" disabled onchange="renderCards()">
+        <select id="modelSelect" disabled>
           <option value="">Todos los modelos</option>
         </select>
       </div>
@@ -144,7 +224,7 @@
     <div class="fgroup">
       <label class="flabel"><span>Año</span><span class="step">3</span></label>
       <div class="sel-wrap">
-        <select id="yearSelect" disabled onchange="onYearChange()">
+        <select id="yearSelect" disabled>
           <option value="">Todos los años</option>
         </select>
       </div>
@@ -161,21 +241,26 @@
     <div class="fgroup">
       <label class="flabel"><span>Buscar modelo</span><span class="step">5</span></label>
       <input type="text" class="search-input" id="searchInput"
-        placeholder="Ej: Corolla, Civic..." oninput="renderCards()" disabled>
+        placeholder="Ej: Corolla, Civic..." disabled>
     </div>
 
-    <button class="reset-btn" onclick="resetAll()">↺ Reiniciar filtros</button>
+    <button class="reset-btn" id="resetBtn">↺ Reiniciar filtros</button>
   </aside>
 
   <main class="results">
     <div class="r-header">
       <div class="rcount"><span class="n" id="rcount">0</span> resultados</div>
-      <div class="sort-wrap">
-        <label>Ordenar</label>
-        <select id="sortSel" onchange="renderCards()">
-          <option value="alpha">A → Z</option>
-          <option value="alpha-desc">Z → A</option>
-        </select>
+      <div class="r-controls">
+        <button class="fav-toggle" id="favToggle">
+          ♥ Guardados<span class="fav-count" id="favCount">0</span>
+        </button>
+        <div class="sort-wrap">
+          <label>Ordenar</label>
+          <select id="sortSel">
+            <option value="alpha">A → Z</option>
+            <option value="alpha-desc">Z → A</option>
+          </select>
+        </div>
       </div>
     </div>
     <div class="cards" id="cards">
@@ -189,11 +274,18 @@
 </div>
 
 <script>
-const BASE = 'https://vpic.nhtsa.dot.gov/api/vehicles';
-const enc  = s => encodeURIComponent(s);
-const esc  = s => { if(s==null)return''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); };
-const hint = (id,msg,cls='') => { const e=document.getElementById(id); e.textContent=msg; e.className='hint '+cls; };
-const $    = id => document.getElementById(id);
+// ── CONSTANTES ────────────────────────────────────────────────────────────
+const NHTSA  = 'https://vpic.nhtsa.dot.gov/api/vehicles';
+const SAFETY = 'https://api.nhtsa.gov/SafetyRatings';
+const RECALL = 'https://api.nhtsa.gov/recalls/recallsByVehicle';
+
+const enc = s => encodeURIComponent(s);
+const esc = s => {
+  if (s == null) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+};
+const $   = id => document.getElementById(id);
+const hint = (id, msg, cls='') => { const e=$(id); e.textContent=msg; e.className='hint '+cls; };
 
 const KNOWN_MAKES = new Set([
   'acura','alfa romeo','aston martin','audi',
@@ -217,29 +309,73 @@ const KNOWN_MAKES = new Set([
 ]);
 
 const TYPE_LABEL = {
-  'passenger car':                          'Auto',
-  'multipurpose passenger vehicle (mpv)':   'SUV / MPV',
-  'truck':                                  'Camioneta',
-  'van':                                    'Van',
-  'motorcycle':                             'Moto',
-  'low speed vehicle (lsv)':               'LSV',
-  'bus':                                    'Bus',
-  'trailer':                                'Tráiler',
-  'incomplete vehicle':                     'Base',
+  'passenger car':                        'Auto',
+  'multipurpose passenger vehicle (mpv)': 'SUV / MPV',
+  'truck':                                'Camioneta',
+  'van':                                  'Van',
+  'motorcycle':                           'Moto',
+  'low speed vehicle (lsv)':             'LSV',
+  'bus':                                  'Bus',
+  'trailer':                              'Tráiler',
+  'incomplete vehicle':                   'Base',
 };
 const typeLabel = t => TYPE_LABEL[t?.toLowerCase()] || t || '—';
 
+// ── ESTADO ────────────────────────────────────────────────────────────────
 let allMakes   = [];
-let baseModels = [];  // GetModelsForMake — sin año ni tipo
-let yearModels = [];  // GetModelsForMakeYear — incluye VehicleTypeName
+let baseModels = [];
+let yearModels = [];
 let activeType = '';
+let favMode    = false;
 
-// ── INIT ──────────────────────────────────────────
+// ── FAVORITOS (localStorage) ──────────────────────────────────────────────
+const FAV_KEY = 'car-explorer-favorites';
+
+function loadFavs() {
+  try { return JSON.parse(localStorage.getItem(FAV_KEY) || '[]'); } catch { return []; }
+}
+function saveFavs(arr) {
+  localStorage.setItem(FAV_KEY, JSON.stringify(arr));
+}
+function favId(make, model, year) {
+  return `${make}|${model}|${year||''}`;
+}
+function isSaved(make, model, year) {
+  return loadFavs().some(f => favId(f.make, f.model, f.year) === favId(make, model, year));
+}
+function toggleFav(make, model, year, type) {
+  let favs = loadFavs();
+  const id = favId(make, model, year);
+  const idx = favs.findIndex(f => favId(f.make, f.model, f.year) === id);
+  if (idx >= 0) favs.splice(idx, 1);
+  else favs.push({ make, model, year: year||'', type: type||'' });
+  saveFavs(favs);
+  updateFavCount();
+  if (favMode) renderCards();
+  else {
+    // solo actualizar el corazón de esa card
+    document.querySelectorAll('.btn-heart').forEach(btn => {
+      if (btn.dataset.id === id) {
+        const saved = idx < 0; // acaba de guardarse
+        btn.textContent = saved ? '♥' : '♡';
+        btn.classList.toggle('saved', saved);
+        btn.title = saved ? 'Quitar de guardados' : 'Guardar';
+      }
+    });
+  }
+}
+function updateFavCount() {
+  const n = loadFavs().length;
+  $('favCount').textContent = n;
+  $('favToggle').classList.toggle('active', favMode && n > 0);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────
 async function loadMakes() {
   try {
-    const data = await fetch(`${BASE}/GetAllMakes?format=json`).then(r=>r.json());
+    const data = await fetch(`${NHTSA}/GetAllMakes?format=json`).then(r=>r.json());
     allMakes = (data.Results||[])
-      .map(m => ({id:m.Make_ID, name:m.Make_Name}))
+      .map(m => ({ id: m.Make_ID, name: m.Make_Name }))
       .filter(m => m.name && KNOWN_MAKES.has(m.name.toLowerCase()))
       .sort((a,b) => a.name.localeCompare(b.name));
 
@@ -251,14 +387,12 @@ async function loadMakes() {
   }
 }
 
-// ── MARCA ──────────────────────────────────────────
+// ── MARCA ─────────────────────────────────────────────────────────────────
 async function onMakeChange() {
   const make = $('makeSelect').value;
-
-  // reset todo lo que depende de la marca
   baseModels = []; yearModels = []; activeType = '';
   $('modelSelect').innerHTML = '<option value="">Todos los modelos</option>';
-  $('modelSelect').disabled = true;
+  $('modelSelect').disabled  = true;
   $('yearSelect').innerHTML  = '<option value="">Todos los años</option>';
   $('yearSelect').disabled   = true;
   $('searchInput').value     = '';
@@ -266,29 +400,26 @@ async function onMakeChange() {
   $('g-type').classList.add('hidden');
   hint('modelHint', 'Elegí una marca primero');
   hint('yearHint',  'Elegí una marca primero');
-
   if (!make) { renderCards(); return; }
 
   hint('makeHint', 'Cargando...', 'go');
   showLoading(`Buscando modelos de ${make}...`);
 
   try {
-    const data = await fetch(`${BASE}/GetModelsForMake/${enc(make)}?format=json`).then(r=>r.json());
+    const data = await fetch(`${NHTSA}/GetModelsForMake/${enc(make)}?format=json`).then(r=>r.json());
     baseModels = (data.Results||[])
       .filter(m => m.Model_Name)
       .sort((a,b) => a.Model_Name.localeCompare(b.Model_Name));
 
-    // dropdown de modelos
-    const names = [...new Set(baseModels.map(m=>m.Model_Name))].sort();
+    const names = [...new Set(baseModels.map(m => m.Model_Name))].sort();
     $('modelSelect').innerHTML = '<option value="">Todos los modelos</option>' +
       names.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
     $('modelSelect').disabled = false;
     hint('modelHint', `${baseModels.length} modelos`, 'ok');
 
-    // dropdown de años (año actual → 2000)
-    const curYear = new Date().getFullYear();
+    const curY = new Date().getFullYear();
     let opts = '<option value="">Todos los años</option>';
-    for (let y = curYear; y >= 2000; y--) opts += `<option value="${y}">${y}</option>`;
+    for (let y = curY; y >= 2000; y--) opts += `<option value="${y}">${y}</option>`;
     $('yearSelect').innerHTML = opts;
     $('yearSelect').disabled  = false;
     hint('yearHint', 'Opcional — filtrá por año exacto');
@@ -302,19 +433,16 @@ async function onMakeChange() {
   }
 }
 
-// ── AÑO ────────────────────────────────────────────
+// ── AÑO ───────────────────────────────────────────────────────────────────
 async function onYearChange() {
   const year = $('yearSelect').value;
   const make = $('makeSelect').value;
-
-  // resetear tipo
   activeType = '';
   $('g-type').classList.add('hidden');
   yearModels = [];
 
   if (!year) {
     hint('yearHint', 'Opcional — filtrá por año exacto');
-    // restaurar modelo dropdown con baseModels
     const names = [...new Set(baseModels.map(m=>m.Model_Name))].sort();
     $('modelSelect').innerHTML = '<option value="">Todos los modelos</option>' +
       names.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
@@ -326,34 +454,23 @@ async function onYearChange() {
   showLoading(`Buscando modelos ${make} ${year}...`);
 
   try {
-    const data = await fetch(`${BASE}/GetModelsForMakeYear/make/${enc(make)}/modelyear/${year}?format=json`).then(r=>r.json());
+    const data = await fetch(`${NHTSA}/GetModelsForMakeYear/make/${enc(make)}/modelyear/${year}?format=json`).then(r=>r.json());
     yearModels = (data.Results||[])
       .filter(m => m.Model_Name)
       .sort((a,b) => a.Model_Name.localeCompare(b.Model_Name));
 
     hint('yearHint', `${yearModels.length} modelos en ${year}`, 'ok');
 
-    // actualizar dropdown de modelos con los de ese año
     const names = [...new Set(yearModels.map(m=>m.Model_Name))].sort();
     $('modelSelect').innerHTML = '<option value="">Todos los modelos</option>' +
       names.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
 
-    // chips de tipo (solo si hay más de uno)
     const types = [...new Set(yearModels.map(m=>m.VehicleTypeName).filter(Boolean))];
     if (types.length > 1) {
       $('typeChips').innerHTML = '<button class="chip active" data-val="">Todos</button>' +
         types.map(t => `<button class="chip" data-val="${esc(t)}">${esc(typeLabel(t))}</button>`).join('');
-      document.querySelectorAll('#typeChips .chip').forEach(c =>
-        c.addEventListener('click', () => {
-          document.querySelectorAll('#typeChips .chip').forEach(x=>x.classList.remove('active'));
-          c.classList.add('active');
-          activeType = c.dataset.val;
-          renderCards();
-        })
-      );
       $('g-type').classList.remove('hidden');
     }
-
     renderCards();
   } catch(e) {
     hint('yearHint', 'Error al cargar', 'err');
@@ -361,25 +478,20 @@ async function onYearChange() {
   }
 }
 
-// ── RENDER ─────────────────────────────────────────
+// ── RENDER ────────────────────────────────────────────────────────────────
 function renderCards() {
-  const year = $('yearSelect').value;
+  if (favMode) { renderFavs(); return; }
+
+  const year     = $('yearSelect').value;
+  const selModel = $('modelSelect').value;
+  const q        = $('searchInput').value.toLowerCase().trim();
   let list = year ? [...yearModels] : [...baseModels];
 
-  // filtro: modelo
-  const selModel = $('modelSelect').value;
-  if (selModel) list = list.filter(m => m.Model_Name === selModel);
-
-  // filtro: tipo (solo con año)
-  if (year && activeType) list = list.filter(m => m.VehicleTypeName === activeType);
-
-  // filtro: búsqueda de texto
-  const q = $('searchInput').value.toLowerCase().trim();
-  if (q) list = list.filter(m => m.Model_Name.toLowerCase().includes(q));
-
-  // ordenar
-  if ($('sortSel').value === 'alpha')      list.sort((a,b)=>a.Model_Name.localeCompare(b.Model_Name));
+  if (selModel)                list = list.filter(m => m.Model_Name === selModel);
+  if (year && activeType)      list = list.filter(m => m.VehicleTypeName === activeType);
+  if (q)                       list = list.filter(m => m.Model_Name.toLowerCase().includes(q));
   if ($('sortSel').value === 'alpha-desc') list.sort((a,b)=>b.Model_Name.localeCompare(a.Model_Name));
+  else                                     list.sort((a,b)=>a.Model_Name.localeCompare(b.Model_Name));
 
   $('rcount').textContent = list.length;
   const grid = $('cards');
@@ -393,37 +505,142 @@ function renderCards() {
     return;
   }
 
-  const make = $('makeSelect').value;
-  grid.innerHTML = list.map(m => {
-    const type    = m.VehicleTypeName ? typeLabel(m.VehicleTypeName) : null;
-    const subtext = [type, year].filter(Boolean).join(' · ') || 'Modelo oficial NHTSA';
-    const googleQ = enc([make, m.Model_Name, year].filter(Boolean).join(' '));
+  grid.innerHTML = list.map(m => cardHTML(m.Make_Name, m.Model_Name, year, m.VehicleTypeName)).join('');
+}
 
-    return `<div class="card">
-      <div class="c-make">${esc(m.Make_Name)}</div>
-      <div class="c-name">${esc(m.Model_Name)}</div>
-      <div class="c-sub">${esc(subtext)}</div>
-      <div class="tags">
-        <span class="tag">${esc(m.Make_Name)}</span>
-        ${type ? `<span class="tag">${esc(type)}</span>` : ''}
-        ${year ? `<span class="tag">${year}</span>` : ''}
-      </div>
-      <div class="card-actions">
-        <a href="https://www.google.com/search?q=${googleQ}" target="_blank" rel="noopener noreferrer" class="btn-google">Buscar en Google →</a>
-      </div>
+function renderFavs() {
+  const favs = loadFavs();
+  $('rcount').textContent = favs.length;
+  const grid = $('cards');
+  if (!favs.length) {
+    grid.innerHTML = `<div class="empty"><div class="ei">♡</div><div class="et">No tenés autos guardados</div><div class="eh">Usá el corazón en cualquier card para guardar</div></div>`;
+    return;
+  }
+  grid.innerHTML = favs.map(f => cardHTML(f.make, f.model, f.year, f.type)).join('');
+}
+
+function cardHTML(make, model, year, vehicleType) {
+  const type    = vehicleType ? typeLabel(vehicleType) : null;
+  const subtext = [type, year].filter(Boolean).join(' · ') || 'Modelo oficial NHTSA';
+  const googleQ = enc([make, model, year].filter(Boolean).join(' '));
+  const saved   = isSaved(make, model, year);
+  const id      = favId(make, model, year);
+
+  return `<div class="card">
+    <button class="btn-heart ${saved?'saved':''}" title="${saved?'Quitar de guardados':'Guardar'}"
+      data-id="${esc(id)}" data-make="${esc(make)}" data-model="${esc(model)}"
+      data-year="${esc(year||'')}" data-type="${esc(vehicleType||'')}">${saved?'♥':'♡'}</button>
+    <div class="c-make">${esc(make)}</div>
+    <div class="c-name">${esc(model)}</div>
+    <div class="c-sub">${esc(subtext)}</div>
+    <div class="tags">
+      <span class="tag">${esc(make)}</span>
+      ${type ? `<span class="tag">${esc(type)}</span>` : ''}
+      ${year ? `<span class="tag">${esc(year)}</span>` : ''}
+    </div>
+    <div class="card-actions">
+      <a href="https://www.google.com/search?q=${googleQ}" target="_blank"
+        rel="noopener noreferrer" class="btn-google">Google →</a>
+      ${year ? `<button class="btn-detail"
+        data-make="${esc(make)}" data-model="${esc(model)}" data-year="${esc(year)}">Detalles</button>` : ''}
+    </div>
+  </div>`;
+}
+
+// ── MODAL ─────────────────────────────────────────────────────────────────
+async function openModal(make, model, year) {
+  $('m-make').textContent = make;
+  $('m-name').textContent = model;
+  $('m-sub').textContent  = year;
+  $('modal-body').innerHTML = `<div class="loading"><div class="spinner"></div><div class="et">Cargando datos de seguridad...</div></div>`;
+  $('modal').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+
+  const [ratingsHTML, recallsHTML] = await Promise.all([
+    fetchRatings(make, model, year),
+    fetchRecalls(make, model, year),
+  ]);
+
+  $('modal-body').innerHTML = `
+    <div>
+      <div class="modal-section-title">Crash Tests NHTSA</div>
+      ${ratingsHTML}
+    </div>
+    <div>
+      <div class="modal-section-title">Recalls de Seguridad</div>
+      ${recallsHTML}
     </div>`;
-  }).join('');
 }
 
-// ── HELPERS ────────────────────────────────────────
-function showLoading(msg) {
-  $('cards').innerHTML = `<div class="loading"><div class="spinner"></div><div class="et">${esc(msg)}</div></div>`;
+function closeModal() {
+  $('modal').classList.add('hidden');
+  document.body.style.overflow = '';
 }
-function showError(msg) {
-  $('cards').innerHTML = `<div class="empty"><div class="ei">!</div><div class="et">Error al cargar</div><div class="eh">${esc(msg)}</div></div>`;
+
+async function fetchRatings(make, model, year) {
+  try {
+    const list = await fetch(`${SAFETY}/modelyear/${year}/make/${enc(make)}/model/${enc(model)}`)
+      .then(r=>r.json());
+    if (!list.Results?.length) return `<p class="rating-na">Sin datos de crash test para este modelo.</p>`;
+
+    const detail = await fetch(`${SAFETY}/VehicleId/${list.Results[0].VehicleId}`).then(r=>r.json());
+    const r = detail.Results?.[0];
+    if (!r) return `<p class="rating-na">Sin datos de crash test para este modelo.</p>`;
+
+    const starsHTML = (val, label) => {
+      const n = parseInt(val);
+      if (!val || val === 'Not Rated' || isNaN(n)) return `
+        <div class="rating-item">
+          <div class="rating-label">${label}</div>
+          <div class="rating-na">Sin datos</div>
+        </div>`;
+      return `<div class="rating-item">
+        <div class="rating-label">${label}</div>
+        <div class="rating-stars">
+          ${'<span class="star-filled">★</span>'.repeat(n)}${'<span class="star-empty">★</span>'.repeat(5-n)}
+        </div>
+      </div>`;
+    };
+
+    return `<div class="ratings-grid">
+      ${starsHTML(r.OverallRating,           'General')}
+      ${starsHTML(r.OverallFrontCrashRating, 'Choque Frontal')}
+      ${starsHTML(r.OverallSideCrashRating,  'Choque Lateral')}
+      ${starsHTML(r.RolloverRating,          'Vuelco')}
+    </div>
+    <p class="rating-source">Fuente: ${esc(list.Results[0].VehicleDescription||'NHTSA')}</p>`;
+  } catch {
+    return `<p class="rating-na">No se pudieron cargar los datos de crash test.</p>`;
+  }
 }
+
+async function fetchRecalls(make, model, year) {
+  try {
+    const data = await fetch(`${RECALL}?make=${enc(make)}&model=${enc(model)}&modelYear=${enc(year)}`).then(r=>r.json());
+    const results = data.results || data.Results || [];
+    const count   = results.length;
+
+    if (!count) return `<div class="no-recalls">✓ Sin recalls registrados para este modelo y año.</div>`;
+
+    const badge = `<span class="recall-badge danger">${count} recall${count>1?'s':''}</span>`;
+    const shown = results.slice(0, 5);
+    const items = shown.map(rc => `
+      <div class="recall-item">
+        <div class="recall-component">${esc(rc.Component||'Sin categoría')}</div>
+        <div class="recall-summary">${esc(rc.Summary||rc.Consequence||'Sin descripción')}</div>
+        <div class="recall-date">${esc(rc.ReportReceivedDate ? rc.ReportReceivedDate.split('T')[0] : '')}</div>
+      </div>`).join('');
+    const more = count > 5 ? `<p class="more-recalls">... y ${count-5} recall${count-5>1?'s':''} más</p>` : '';
+
+    return `<div style="margin-bottom:.8rem">${badge}</div><div class="recall-list">${items}</div>${more}`;
+  } catch {
+    return `<p class="rating-na">No se pudieron cargar los recalls.</p>`;
+  }
+}
+
+// ── RESET ─────────────────────────────────────────────────────────────────
 function resetAll() {
-  $('makeSelect').value = '';
+  $('makeSelect').value      = '';
   $('modelSelect').innerHTML = '<option value="">Todos los modelos</option>';
   $('modelSelect').disabled  = true;
   $('yearSelect').innerHTML  = '<option value="">Todos los años</option>';
@@ -432,6 +649,8 @@ function resetAll() {
   $('searchInput').disabled  = true;
   $('g-type').classList.add('hidden');
   baseModels = []; yearModels = []; activeType = '';
+  favMode = false;
+  $('favToggle').classList.remove('active');
   hint('makeHint',  `${allMakes.length} marcas disponibles`, 'ok');
   hint('modelHint', 'Elegí una marca primero');
   hint('yearHint',  'Elegí una marca primero');
@@ -439,6 +658,57 @@ function resetAll() {
   $('cards').innerHTML = `<div class="empty"><div class="ei">⋯</div><div class="et">Elegí una marca para empezar</div><div class="eh">Datos de la NHTSA · Sin API key · Sin límites</div></div>`;
 }
 
+// ── HELPERS ───────────────────────────────────────────────────────────────
+function showLoading(msg) {
+  $('cards').innerHTML = `<div class="loading"><div class="spinner"></div><div class="et">${esc(msg)}</div></div>`;
+}
+function showError(msg) {
+  $('cards').innerHTML = `<div class="empty"><div class="ei">!</div><div class="et">Error al cargar</div><div class="eh">${esc(msg)}</div></div>`;
+}
+
+// ── EVENTOS ───────────────────────────────────────────────────────────────
+$('makeSelect').addEventListener('change', onMakeChange);
+$('yearSelect').addEventListener('change', onYearChange);
+$('modelSelect').addEventListener('change', renderCards);
+$('searchInput').addEventListener('input',  renderCards);
+$('sortSel').addEventListener('change',     renderCards);
+$('resetBtn').addEventListener('click',     resetAll);
+
+$('favToggle').addEventListener('click', () => {
+  favMode = !favMode;
+  $('favToggle').classList.toggle('active', favMode);
+  renderCards();
+});
+
+$('modalCloseBtn').addEventListener('click', closeModal);
+$('modal').addEventListener('click', e => { if (e.target === $('modal')) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// event delegation para cards
+$('cards').addEventListener('click', e => {
+  const heart = e.target.closest('.btn-heart');
+  if (heart) {
+    toggleFav(heart.dataset.make, heart.dataset.model, heart.dataset.year, heart.dataset.type);
+    return;
+  }
+  const detail = e.target.closest('.btn-detail');
+  if (detail) {
+    openModal(detail.dataset.make, detail.dataset.model, detail.dataset.year);
+  }
+});
+
+// chips de tipo (event delegation)
+$('typeChips').addEventListener('click', e => {
+  const chip = e.target.closest('.chip');
+  if (!chip) return;
+  document.querySelectorAll('#typeChips .chip').forEach(c=>c.classList.remove('active'));
+  chip.classList.add('active');
+  activeType = chip.dataset.val;
+  renderCards();
+});
+
+// ── ARRANQUE ──────────────────────────────────────────────────────────────
+updateFavCount();
 loadMakes();
 </script>
 </body>
