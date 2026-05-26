@@ -187,8 +187,29 @@
 // ═══════════════════════════════════════════════════════════════════
 
 const BASE = 'https://vpic.nhtsa.dot.gov/api/vehicles';
-let allModels = [];   // modelos del make elegido
-let allMakes  = [];   // cache de marcas
+let allModels = [];
+let allMakes  = [];
+
+const KNOWN_MAKES = new Set([
+  'acura','alfa romeo','aston martin','audi',
+  'bentley','bmw','bugatti','buick',
+  'cadillac','chevrolet','chrysler','citroen','citroën',
+  'dodge',
+  'ferrari','fiat','ford',
+  'genesis','gmc',
+  'honda','hummer','hyundai',
+  'infiniti',
+  'jaguar','jeep',
+  'kia',
+  'lamborghini','land rover','lexus','lincoln','lotus','lucid',
+  'maserati','mazda','mclaren','mercedes-benz','mini','mitsubishi',
+  'nissan',
+  'peugeot','pontiac','porsche',
+  'ram','renault','rivian','rolls-royce',
+  'saab','subaru','suzuki',
+  'tesla','toyota',
+  'volkswagen','volvo',
+]);
 
 const hint = (id, msg, cls='') => {
   const el = document.getElementById(id);
@@ -216,7 +237,7 @@ async function loadMakes() {
 
     allMakes = (data.Results || [])
       .map(m => ({ id: m.Make_ID, name: m.Make_Name }))
-      .filter(m => m.name)
+      .filter(m => m.name && KNOWN_MAKES.has(m.name.toLowerCase()))
       .sort((a, b) => a.name.localeCompare(b.name));
 
     const sel = document.getElementById('makeSelect');
