@@ -143,6 +143,18 @@
   .modal-section-title{font-size:.54rem;letter-spacing:.3em;text-transform:uppercase;
     color:var(--gold);margin-bottom:1rem;padding-bottom:.6rem;border-bottom:1px solid var(--gray-dark);}
 
+  /* fuel economy */
+  .mpg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin-bottom:1rem;}
+  .mpg-item{background:rgba(255,255,255,.02);border:1px solid var(--gray-dark);padding:1rem;text-align:center;}
+  .mpg-val{font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:var(--gold);line-height:1;}
+  .mpg-unit{font-size:.52rem;color:var(--gold);opacity:.7;}
+  .mpg-label{font-size:.44rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gray);margin-top:.35rem;}
+  .fuel-cost{font-size:.78rem;margin-bottom:.9rem;padding:.7rem .9rem;
+    background:rgba(201,168,76,.06);border-left:3px solid var(--gold);}
+  .fuel-cost strong{color:var(--gold);}
+  .fuel-specs{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.5rem;}
+  .fuel-spec{font-size:.52rem;padding:.22rem .55rem;border:1px solid var(--gray-dark);color:var(--gray);border-radius:2px;}
+
   /* ratings */
   .ratings-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;}
   .rating-item{background:rgba(255,255,255,.02);border:1px solid var(--gray-dark);padding:1rem;}
@@ -600,12 +612,17 @@ async function onModalYearChange() {
 async function loadModalData(make, model, year) {
   $('modal-body').innerHTML = `<div class="loading"><div class="spinner"></div><div class="et">Cargando datos de ${year}...</div></div>`;
 
-  const [ratingsHTML, recallsHTML] = await Promise.all([
+  const [ratingsHTML, recallsHTML, fuelHTML] = await Promise.all([
     fetchRatings(make, model, year),
     fetchRecalls(make, model, year),
+    fetchFuelEconomy(make, model, year),
   ]);
 
   $('modal-body').innerHTML = `
+    <div>
+      <div class="modal-section-title">Consumo de Combustible · ${year}</div>
+      ${fuelHTML}
+    </div>
     <div>
       <div class="modal-section-title">Crash Tests NHTSA · ${year}</div>
       ${ratingsHTML}
@@ -619,6 +636,58 @@ async function loadModalData(make, model, year) {
 function closeModal() {
   $('modal').classList.add('hidden');
   document.body.style.overflow = '';
+}
+
+async function fetchFuelEconomy(make, model, year) {
+  try {
+    const base    = 'https://www.fueleconomy.gov/ws/rest';
+    const headers = { 'Accept': 'application/json' };
+
+    const opts = await fetch(
+      `${base}/vehicle/menu/options?year=${enc(year)}&make=${enc(make)}&model=${enc(model)}`,
+      { headers }
+    ).then(r => r.json());
+
+    const items = opts.menuItem;
+    if (!items) return `<p class="rating-na">Sin datos de consumo disponibles para este modelo.</p>`;
+    const list = Array.isArray(items) ? items : [items];
+    if (!list.length) return `<p class="rating-na">Sin datos de consumo disponibles para este modelo.</p>`;
+
+    const v = await fetch(`${base}/vehicle/${list[0].value}`, { headers }).then(r => r.json());
+
+    const mpgCity = v.city08  || '—';
+    const mpgHwy  = v.highway08 || '—';
+    const mpgComb = v.comb08  || '—';
+    const cost    = v.fuelCost08 ? `$${Number(v.fuelCost08).toLocaleString('en-US')}` : null;
+    const fuel    = v.fuelType;
+    const engine  = v.displ && v.cylinders ? `${v.displ}L · ${v.cylinders} cilindros` : null;
+    const trans   = v.trany;
+    const drive   = v.drive;
+    const co2     = v.co2 && v.co2 > 0 ? `${v.co2} g/mi CO₂` : null;
+
+    const specsArr = [fuel, engine, trans, drive, co2].filter(Boolean);
+
+    return `
+      <div class="mpg-grid">
+        <div class="mpg-item">
+          <div class="mpg-val">${mpgCity}<span class="mpg-unit"> mpg</span></div>
+          <div class="mpg-label">Ciudad</div>
+        </div>
+        <div class="mpg-item">
+          <div class="mpg-val">${mpgHwy}<span class="mpg-unit"> mpg</span></div>
+          <div class="mpg-label">Ruta</div>
+        </div>
+        <div class="mpg-item">
+          <div class="mpg-val">${mpgComb}<span class="mpg-unit"> mpg</span></div>
+          <div class="mpg-label">Combinado</div>
+        </div>
+      </div>
+      ${cost ? `<div class="fuel-cost">Costo anual estimado de combustible: <strong>${cost}</strong></div>` : ''}
+      ${specsArr.length ? `<div class="fuel-specs">${specsArr.map(s=>`<span class="fuel-spec">${esc(s)}</span>`).join('')}</div>` : ''}
+      <p class="rating-source">Fuente: fueleconomy.gov · ${esc(list[0].text)}${list.length > 1 ? ` y ${list.length - 1} versión/es más` : ''}</p>`;
+  } catch {
+    return `<p class="rating-na">Sin datos de consumo disponibles para este modelo.</p>`;
+  }
 }
 
 async function fetchRatings(make, model, year) {
