@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Car Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black:#0a0a0a;--bg:#111;--white:#f5f0e8;--cream:#e8e0d0;
+    --gold:#c9a84c;--gold-light:#e4c97a;--green:#6fbf73;
+    --red:#d65656;--gray:#888;--gray-dark:#2a2a2a;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--black);color:var(--white);font-family:'DM Mono',monospace;min-height:100vh;}
+  header{padding:3rem 4rem 2rem;text-align:center;
+    background:radial-gradient(ellipse 80% 60% at 50% 30%,rgba(201,168,76,.08) 0%,transparent 70%),var(--black);
+    border-bottom:1px solid var(--gray-dark);}
+  .eyebrow{font-size:.65rem;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;}
+  h1{font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,3.2rem);font-weight:900;line-height:1;margin-bottom:.8rem;}
+  h1 em{font-style:italic;color:var(--gold);}
+  .subtitle{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;color:var(--gray);max-width:580px;margin:0 auto;}
+  .main-grid{display:grid;grid-template-columns:340px 1fr;min-height:calc(100vh - 200px);}
+  @media(max-width:860px){.main-grid{grid-template-columns:1fr;}}
+  .sidebar{background:var(--bg);border-right:1px solid var(--gray-dark);
+    padding:2rem 1.8rem;position:sticky;top:0;height:100vh;overflow-y:auto;}
+  @media(max-width:860px){.sidebar{position:static;height:auto;border-right:none;border-bottom:1px solid var(--gray-dark);}}
+  .s-title{font-family:'Playfair Display',serif;font-size:1.3rem;font-style:italic;color:var(--gold);margin-bottom:.3rem;}
+  .s-sub{font-size:.6rem;letter-spacing:.2em;color:var(--gray);text-transform:uppercase;margin-bottom:1.8rem;}
+  .fgroup{margin-bottom:1.6rem;padding-bottom:1.6rem;border-bottom:1px solid var(--gray-dark);}
+  .fgroup:last-of-type{border-bottom:none;margin-bottom:0;}
+  .flabel{display:flex;justify-content:space-between;align-items:center;
+    font-size:.53rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gray);margin-bottom:.7rem;}
+  .step{background:var(--gold);color:var(--black);width:17px;height:17px;border-radius:50%;
+    display:inline-flex;align-items:center;justify-content:center;font-size:.58rem;font-weight:700;letter-spacing:0;}
+  .sel-wrap{position:relative;}
+  select{width:100%;background:var(--black);border:1px solid var(--gray-dark);color:var(--white);
+    padding:.75rem 2rem .75rem .8rem;font-family:'DM Mono',monospace;font-size:.8rem;
+    cursor:pointer;appearance:none;transition:border-color .2s;}
+  select:focus{outline:none;border-color:var(--gold);}
+  select:disabled{color:var(--gray);cursor:not-allowed;opacity:.5;}
+  .sel-wrap::after{content:'▾';position:absolute;right:.8rem;top:50%;transform:translateY(-50%);
+    color:var(--gold);pointer-events:none;}
+  .hint{font-size:.58rem;color:var(--gray);margin-top:.4rem;min-height:.85rem;transition:color .2s;}
+  .hint.go{color:var(--gold);} .hint.ok{color:var(--green);} .hint.err{color:var(--red);}
+  .chips{display:flex;flex-wrap:wrap;gap:.4rem;}
+  .chip{background:transparent;border:1px solid var(--gray-dark);color:var(--white);
+    padding:.42rem .85rem;font-family:'DM Mono',monospace;font-size:.67rem;
+    cursor:pointer;transition:all .2s;border-radius:2px;}
+  .chip:hover{border-color:var(--gold);}
+  .chip.active{background:var(--gold);border-color:var(--gold);color:var(--black);}
+  .reset-btn{width:100%;background:transparent;border:1px solid var(--gray-dark);color:var(--gray);
+    padding:.72rem;font-family:'DM Mono',monospace;font-size:.63rem;letter-spacing:.2em;
+    text-transform:uppercase;cursor:pointer;transition:all .2s;margin-top:1rem;}
+  .reset-btn:hover{border-color:var(--red);color:var(--red);}
+  .results{padding:2.5rem;}
+  @media(max-width:600px){.results{padding:1.2rem;}}
+  .r-header{display:flex;justify-content:space-between;align-items:baseline;
+    margin-bottom:2rem;padding-bottom:1.2rem;border-bottom:1px solid var(--gray-dark);flex-wrap:wrap;gap:.8rem;}
+  .rcount{font-family:'Playfair Display',serif;font-size:1.8rem;font-style:italic;}
+  .rcount .n{font-weight:900;color:var(--gold);font-style:normal;}
+  .sort-wrap{display:flex;align-items:center;gap:.7rem;}
+  .sort-wrap label{font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gray);}
+  .sort-wrap select{width:auto;padding:.42rem .65rem;font-size:.72rem;}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1.3rem;}
+  .card{background:var(--bg);border:1px solid var(--gray-dark);padding:1.5rem;transition:all .3s;}
+  .card:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:0 8px 28px rgba(201,168,76,.1);}
+  .c-make{font-size:.56rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:.3rem;}
+  .c-name{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;line-height:1.1;margin-bottom:.2rem;text-transform:capitalize;}
+  .c-sub{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--gray);font-size:.9rem;margin-bottom:1.2rem;}
+  .specs{display:grid;grid-template-columns:1fr 1fr;gap:.55rem;margin-bottom:1.1rem;}
+  .spec{background:rgba(255,255,255,.02);padding:.55rem .7rem;border-left:2px solid var(--gray-dark);}
+  .sl{font-size:.46rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gray);margin-bottom:.12rem;}
+  .sv{font-family:'Playfair Display',serif;font-size:.88rem;font-weight:700;text-transform:capitalize;}
+  .tags{display:flex;flex-wrap:wrap;gap:.3rem;}
+  .tag{font-size:.5rem;padding:.2rem .5rem;background:rgba(201,168,76,.1);color:var(--gold);border-radius:2px;letter-spacing:.1em;text-transform:uppercase;}
+  .empty,.loading{grid-column:1/-1;text-align:center;padding:5rem 2rem;}
+  .ei{font-family:'Playfair Display',serif;font-size:3.5rem;font-style:italic;color:var(--gold);opacity:.3;margin-bottom:1rem;}
+  .et{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-style:italic;margin-bottom:.4rem;color:var(--white);}
+  .eh{font-size:.65rem;letter-spacing:.15em;color:var(--gray);}
+  .spinner{width:36px;height:36px;margin:0 auto 1rem;border:2px solid var(--gray-dark);border-top-color:var(--gold);border-radius:50%;animation:sp .8s linear infinite;}
+  @keyframes sp{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Car Explorer · NHTSA vPIC API</div>
+  <h1>Explorá autos <em>en cascada</em></h1>
+  <p class="subtitle">Elegí marca y modelo desde selectores — datos reales de la base oficial de la NHTSA</p>
+</header>
+
+<div class="main-grid">
+  <aside class="sidebar">
+    <div class="s-title">Elegí tu auto</div>
+    <div class="s-sub">selectores en cascada</div>
+
+    <!-- 1: MARCA -->
+    <div class="fgroup">
+      <label class="flabel"><span>Marca</span><span class="step">1</span></label>
+      <div class="sel-wrap">
+        <select id="makeSelect" onchange="onMakeChange()">
+          <option value="">Cargando marcas...</option>
+        </select>
+      </div>
+      <div class="hint" id="makeHint">Esperá un momento...</div>
+    </div>
+
+    <!-- 2: MODELO -->
+    <div class="fgroup">
+      <label class="flabel"><span>Modelo</span><span class="step">2</span></label>
+      <div class="sel-wrap">
+        <select id="modelSelect" disabled onchange="onModelChange()">
+          <option value="">Elegí una marca primero</option>
+        </select>
+      </div>
+      <div class="hint" id="modelHint">Se carga al elegir marca</div>
+    </div>
+
+    <!-- 3: AÑO -->
+    <div class="fgroup">
+      <label class="flabel"><span>Año mínimo</span><span class="step">3</span></label>
+      <div class="chips" id="yearChips">
+        <button class="chip active" data-val="">Todos</button>
+        <button class="chip" data-val="2020">2020+</button>
+        <button class="chip" data-val="2015">2015+</button>
+        <button class="chip" data-val="2010">2010+</button>
+        <button class="chip" data-val="2005">2005+</button>
+      </div>
+    </div>
+
+    <!-- 4: COMBUSTIBLE -->
+    <div class="fgroup">
+      <label class="flabel"><span>Combustible</span><span class="step">4</span></label>
+      <div class="chips" id="fuelChips">
+        <button class="chip active" data-val="">Todos</button>
+        <button class="chip" data-val="GAS">Nafta</button>
+        <button class="chip" data-val="DIESEL">Diesel</button>
+        <button class="chip" data-val="ELECTRIC">Eléctrico</button>
+      </div>
+    </div>
+
+    <button class="reset-btn" onclick="resetAll()">Reiniciar</button>
+  </aside>
+
+  <main class="results">
+    <div class="r-header">
+      <div class="rcount"><span class="n" id="rcount">0</span> resultados</div>
+      <div class="sort-wrap">
+        <label>Ordenar</label>
+        <select id="sortSel" onchange="renderCards()">
+          <option value="default">Default</option>
+          <option value="year-desc">Más nuevo</option>
+          <option value="year-asc">Más viejo</option>
+          <option value="alpha">Alfabético</option>
+        </select>
+      </div>
+    </div>
+    <div class="cards" id="cards">
+      <div class="empty">
+        <div class="ei">⋯</div>
+        <div class="et">Esperá que carguen las marcas</div>
+        <div class="eh">Datos de la API oficial de la NHTSA · Sin API key</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// NHTSA vPIC API — gratuita, sin API key
+//
+// Endpoints usados:
+//   GetAllMakes:
+//     GET /vehicles/GetAllMakes?format=json
+//     → { Results: [{ Make_ID, Make_Name }] }
+//
+//   GetModelsForMake:
+//     GET /vehicles/GetModelsForMake/{make}?format=json
+//     → { Results: [{ Make_ID, Make_Name, Model_ID, Model_Name }] }
+//
+// Objeto principal (Car):
+//   Make_ID       Number  — ID interno de la marca
+//   Make_Name     String  — nombre de la marca
+//   Model_ID      Number  — ID interno del modelo
+//   Model_Name    String  — nombre del modelo
+// ═══════════════════════════════════════════════════════════════════
+
+const BASE = 'https://vpic.nhtsa.dot.gov/api/vehicles';
+let allModels = [];   // modelos del make elegido
+let allMakes  = [];   // cache de marcas
+
+const hint = (id, msg, cls='') => {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = 'hint ' + cls;
+};
+
+// ── chips ──
+['yearChips','fuelChips'].forEach(id => {
+  document.querySelectorAll(`#${id} .chip`).forEach(c =>
+    c.addEventListener('click', () => {
+      document.querySelectorAll(`#${id} .chip`).forEach(x => x.classList.remove('active'));
+      c.classList.add('active');
+      renderCards();
+    })
+  );
+});
+const chip = id => document.querySelector(`#${id} .chip.active`)?.dataset.val || '';
+
+// ── INIT: cargar todas las marcas ──
+async function loadMakes() {
+  try {
+    const res  = await fetch(`${BASE}/GetAllMakes?format=json`);
+    const data = await res.json();
+
+    allMakes = (data.Results || [])
+      .map(m => ({ id: m.Make_ID, name: m.Make_Name }))
+      .filter(m => m.name)
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    const sel = document.getElementById('makeSelect');
+    sel.innerHTML = '<option value="">— Elegí una marca —</option>' +
+      allMakes.map(m => `<option value="${esc(m.name)}">${esc(m.name)}</option>`).join('');
+
+    hint('makeHint', `${allMakes.length} marcas disponibles`, 'ok');
+  } catch(e) {
+    hint('makeHint', 'Error cargando marcas: ' + e.message, 'err');
+  }
+}
+
+// ── PASO 1: elegir marca → cargar modelos ──
+async function onMakeChange() {
+  const make = document.getElementById('makeSelect').value;
+  const modelSel = document.getElementById('modelSelect');
+
+  if (!make) {
+    modelSel.disabled = true;
+    modelSel.innerHTML = '<option>Elegí una marca primero</option>';
+    allModels = [];
+    renderCards();
+    return;
+  }
+
+  hint('modelHint', 'Cargando modelos...', 'go');
+  modelSel.disabled = true;
+  modelSel.innerHTML = '<option>Cargando...</option>';
+  showLoading(`Buscando modelos de ${make}...`);
+
+  try {
+    const res  = await fetch(`${BASE}/GetModelsForMake/${encodeURIComponent(make)}?format=json`);
+    const data = await res.json();
+
+    allModels = (data.Results || [])
+      .filter(m => m.Model_Name)
+      .sort((a, b) => a.Model_Name.localeCompare(b.Model_Name));
+
+    modelSel.innerHTML = '<option value="">— Todos los modelos —</option>' +
+      allModels.map(m => `<option value="${esc(m.Model_Name)}">${esc(m.Model_Name)}</option>`).join('');
+    modelSel.disabled = false;
+
+    hint('modelHint', `${allModels.length} modelos encontrados`, 'ok');
+    renderCards();
+  } catch(e) {
+    hint('modelHint', 'Error: ' + e.message, 'err');
+    showError(e.message);
+  }
+}
+
+// ── PASO 2: elegir modelo → filtrar ──
+function onModelChange() { renderCards(); }
+
+// ── RENDER ──
+function renderCards() {
+  const selModel = document.getElementById('modelSelect').value;
+  const sort     = document.getElementById('sortSel').value;
+
+  let list = [...allModels];
+  if (selModel) list = list.filter(m => m.Model_Name === selModel);
+
+  if (sort === 'year-desc') list.sort((a,b) => (b.Model_Name > a.Model_Name ? 1 : -1));
+  if (sort === 'year-asc')  list.sort((a,b) => (a.Model_Name > b.Model_Name ? 1 : -1));
+  if (sort === 'alpha')     list.sort((a,b) => a.Model_Name.localeCompare(b.Model_Name));
+
+  document.getElementById('rcount').textContent = list.length;
+  const grid = document.getElementById('cards');
+
+  if (!allModels.length) {
+    grid.innerHTML = `<div class="empty"><div class="ei">⋯</div><div class="et">Elegí una marca para ver los modelos</div><div class="eh">Datos de la NHTSA · Sin API key · Sin límites</div></div>`;
+    return;
+  }
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty"><div class="ei">∅</div><div class="et">Sin resultados</div><div class="eh">Cambiá los filtros</div></div>`;
+    return;
+  }
+
+  grid.innerHTML = list.map(m => `
+    <div class="card">
+      <div class="c-make">${esc(m.Make_Name)}</div>
+      <div class="c-name">${esc(m.Model_Name)}</div>
+      <div class="c-sub">Modelo oficial NHTSA</div>
+      <div class="specs">
+        <div class="spec"><div class="sl">Make ID</div><div class="sv">${m.Make_ID}</div></div>
+        <div class="spec"><div class="sl">Model ID</div><div class="sv">${m.Model_ID}</div></div>
+      </div>
+      <div class="tags"><span class="tag">${esc(m.Make_Name)}</span></div>
+    </div>`).join('');
+}
+
+// ── helpers ──
+function showLoading(msg) {
+  document.getElementById('cards').innerHTML =
+    `<div class="loading"><div class="spinner"></div><div class="et">${esc(msg)}</div></div>`;
+}
+function showError(msg) {
+  document.getElementById('cards').innerHTML =
+    `<div class="empty"><div class="ei">!</div><div class="et">Error</div><div class="eh">${esc(msg)}</div></div>`;
+}
+function esc(s) {
+  if (s == null) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function resetAll() {
+  document.getElementById('makeSelect').value = '';
+  const ms = document.getElementById('modelSelect');
+  ms.disabled = true;
+  ms.innerHTML = '<option>Elegí una marca primero</option>';
+  hint('modelHint', 'Se carga al elegir marca');
+  ['yearChips','fuelChips'].forEach(id => {
+    document.querySelectorAll(`#${id} .chip`).forEach(c => c.classList.remove('active'));
+    document.querySelector(`#${id} .chip`).classList.add('active');
+  });
+  allModels = [];
+  renderCards();
+}
+
+// arranque
+loadMakes();
+</script>
+</body>
+</html>
