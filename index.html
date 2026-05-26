@@ -146,14 +146,22 @@
   /* fuel economy */
   .mpg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin-bottom:1rem;}
   .mpg-item{background:rgba(255,255,255,.02);border:1px solid var(--gray-dark);padding:1rem;text-align:center;}
-  .mpg-val{font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:var(--gold);line-height:1;}
-  .mpg-unit{font-size:.52rem;color:var(--gold);opacity:.7;}
+  .mpg-val{font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:900;color:var(--gold);line-height:1;}
+  .mpg-unit{font-size:.48rem;color:var(--gold);opacity:.7;display:block;margin-top:.1rem;}
+  .mpg-sub{font-size:.44rem;color:var(--gray);margin-top:.15rem;}
   .mpg-label{font-size:.44rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gray);margin-top:.35rem;}
   .fuel-cost{font-size:.78rem;margin-bottom:.9rem;padding:.7rem .9rem;
     background:rgba(201,168,76,.06);border-left:3px solid var(--gold);}
   .fuel-cost strong{color:var(--gold);}
+  .fuel-cost-note{font-size:.56rem;color:var(--gray);margin-top:.25rem;}
   .fuel-specs{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.5rem;}
   .fuel-spec{font-size:.52rem;padding:.22rem .55rem;border:1px solid var(--gray-dark);color:var(--gray);border-radius:2px;}
+  /* buy links */
+  .buy-links{display:flex;flex-wrap:wrap;gap:.6rem;}
+  .buy-link{flex:1;min-width:130px;display:block;text-align:center;padding:.65rem .5rem;
+    border:1px solid var(--gray-dark);color:var(--gray);font-family:'DM Mono',monospace;
+    font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;transition:all .2s;}
+  .buy-link:hover{border-color:var(--gold);color:var(--gold);}
 
   /* ratings */
   .ratings-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;}
@@ -620,6 +628,10 @@ async function loadModalData(make, model, year) {
 
   $('modal-body').innerHTML = `
     <div>
+      <div class="modal-section-title">Dónde Comprarlo · ${year}</div>
+      ${buildBuyLinksHTML(make, model, year)}
+    </div>
+    <div>
       <div class="modal-section-title">Consumo de Combustible · ${year}</div>
       ${fuelHTML}
     </div>
@@ -638,6 +650,11 @@ function closeModal() {
   document.body.style.overflow = '';
 }
 
+// MPG → métrico
+const mpgToL100 = mpg => mpg && mpg > 0 ? (235.214 / mpg).toFixed(1) : null;
+const mpgToKmL  = mpg => mpg && mpg > 0 ? (mpg * 0.42514).toFixed(1) : null;
+const miToKm    = mi  => mi  && mi  > 0 ? Math.round(mi * 1.60934) : null;
+
 async function fetchFuelEconomy(make, model, year) {
   try {
     const base    = 'https://www.fueleconomy.gov/ws/rest';
@@ -655,39 +672,79 @@ async function fetchFuelEconomy(make, model, year) {
 
     const v = await fetch(`${base}/vehicle/${list[0].value}`, { headers }).then(r => r.json());
 
-    const mpgCity = v.city08  || '—';
-    const mpgHwy  = v.highway08 || '—';
-    const mpgComb = v.comb08  || '—';
-    const cost    = v.fuelCost08 ? `$${Number(v.fuelCost08).toLocaleString('en-US')}` : null;
-    const fuel    = v.fuelType;
-    const engine  = v.displ && v.cylinders ? `${v.displ}L · ${v.cylinders} cilindros` : null;
-    const trans   = v.trany;
-    const drive   = v.drive;
-    const co2     = v.co2 && v.co2 > 0 ? `${v.co2} g/mi CO₂` : null;
+    const fuelLower = (v.fuelType || '').toLowerCase();
+    const isEV      = fuelLower.includes('electricity') && !fuelLower.includes('gas');
+    const isHybrid  = fuelLower.includes('hybrid') || (v.phevCity && v.phevCity > 0);
 
-    const specsArr = [fuel, engine, trans, drive, co2].filter(Boolean);
+    const engine  = v.displ && v.cylinders ? `${v.displ}L · ${v.cylinders} cil.` : null;
+    const specsArr = [v.fuelType, engine, v.trany, v.drive].filter(Boolean);
+
+    let consumptionHTML = '';
+
+    if (isEV) {
+      const rangeKm = miToKm(v.range);
+      const effKwh  = v.co2TailpipeGpm === 0 && v.city08 ? (33.7 / v.city08 * 100 / 1.60934).toFixed(1) : null;
+      consumptionHTML = `
+        <div class="mpg-grid" style="grid-template-columns:${rangeKm && effKwh ? '1fr 1fr' : '1fr'}">
+          ${rangeKm ? `<div class="mpg-item">
+            <div class="mpg-val">${rangeKm}<span class="mpg-unit">km</span></div>
+            <div class="mpg-label">Autonomía estimada</div>
+          </div>` : ''}
+          ${effKwh ? `<div class="mpg-item">
+            <div class="mpg-val">${effKwh}<span class="mpg-unit">kWh/100km</span></div>
+            <div class="mpg-label">Eficiencia</div>
+          </div>` : ''}
+        </div>`;
+    } else {
+      const city = mpgToL100(v.city08);
+      const hwy  = mpgToL100(v.highway08);
+      const comb = mpgToL100(v.comb08);
+      const combKmL = mpgToKmL(v.comb08);
+      consumptionHTML = `
+        <div class="mpg-grid">
+          <div class="mpg-item">
+            <div class="mpg-val">${city || '—'}<span class="mpg-unit">L/100km</span></div>
+            <div class="mpg-sub">${mpgToKmL(v.city08) || '—'} km/L</div>
+            <div class="mpg-label">Ciudad</div>
+          </div>
+          <div class="mpg-item">
+            <div class="mpg-val">${hwy || '—'}<span class="mpg-unit">L/100km</span></div>
+            <div class="mpg-sub">${mpgToKmL(v.highway08) || '—'} km/L</div>
+            <div class="mpg-label">Ruta</div>
+          </div>
+          <div class="mpg-item">
+            <div class="mpg-val">${comb || '—'}<span class="mpg-unit">L/100km</span></div>
+            <div class="mpg-sub">${combKmL || '—'} km/L</div>
+            <div class="mpg-label">Combinado</div>
+          </div>
+        </div>`;
+    }
+
+    const costUSD = v.fuelCost08 ? Number(v.fuelCost08).toLocaleString('en-US') : null;
 
     return `
-      <div class="mpg-grid">
-        <div class="mpg-item">
-          <div class="mpg-val">${mpgCity}<span class="mpg-unit"> mpg</span></div>
-          <div class="mpg-label">Ciudad</div>
-        </div>
-        <div class="mpg-item">
-          <div class="mpg-val">${mpgHwy}<span class="mpg-unit"> mpg</span></div>
-          <div class="mpg-label">Ruta</div>
-        </div>
-        <div class="mpg-item">
-          <div class="mpg-val">${mpgComb}<span class="mpg-unit"> mpg</span></div>
-          <div class="mpg-label">Combinado</div>
-        </div>
-      </div>
-      ${cost ? `<div class="fuel-cost">Costo anual estimado de combustible: <strong>${cost}</strong></div>` : ''}
+      ${consumptionHTML}
+      ${costUSD ? `<div class="fuel-cost">
+        Costo anual estimado: <strong>USD $${costUSD}</strong>
+        <div class="fuel-cost-note">Basado en precio de combustible de EE.UU. — referencia orientativa</div>
+      </div>` : ''}
       ${specsArr.length ? `<div class="fuel-specs">${specsArr.map(s=>`<span class="fuel-spec">${esc(s)}</span>`).join('')}</div>` : ''}
-      <p class="rating-source">Fuente: fueleconomy.gov · ${esc(list[0].text)}${list.length > 1 ? ` y ${list.length - 1} versión/es más` : ''}</p>`;
+      <p class="rating-source">Fuente: fueleconomy.gov · ${esc(list[0].text)}${list.length > 1 ? ` · ${list.length} versiones disponibles` : ''}</p>`;
   } catch {
     return `<p class="rating-na">Sin datos de consumo disponibles para este modelo.</p>`;
   }
+}
+
+function buildBuyLinksHTML(make, model, year) {
+  const slug = s => s.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  const m = slug(make), mo = slug(model);
+  const googleQ = enc(`${make} ${model} ${year} for sale`);
+  return `<div class="buy-links">
+    <a href="https://www.edmunds.com/${m}/${mo}/${year}/" target="_blank" rel="noopener noreferrer" class="buy-link">Edmunds →</a>
+    <a href="https://www.kbb.com/${m}/${mo}/${year}/" target="_blank" rel="noopener noreferrer" class="buy-link">Kelley Blue Book →</a>
+    <a href="https://www.cars.com/shopping/results/?make_slug=${enc(m)}&model_slug=${enc(mo)}&year_min=${year}&year_max=${year}" target="_blank" rel="noopener noreferrer" class="buy-link">Cars.com →</a>
+    <a href="https://www.google.com/search?q=${googleQ}" target="_blank" rel="noopener noreferrer" class="buy-link">Google →</a>
+  </div>`;
 }
 
 async function fetchRatings(make, model, year) {
